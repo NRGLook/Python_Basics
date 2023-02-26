@@ -15,7 +15,8 @@ def simple_calculator(num1, num2,
         case _:
             return "Check your input!" \
                    " Something is incorrect!" \
-                   " Try Again!"\
+                   " Try Again!"
+
 
 print(simple_calculator(1, 2,
                         "add"))
@@ -27,5 +28,3 @@ print(simple_calculator(1, 0,
                         "div"))
 print(simple_calculator(1, 0,
                         "way"))
-
-
