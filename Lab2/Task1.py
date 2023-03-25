@@ -14,4 +14,15 @@ def count_non_declarative_sentences(text):
             non_declarative_count += 1
         return non_declarative_count
 
-def average
+def average_sentence_length(text):
+    """Calculate the average sentence length in characters"""
+    sentences = re.findall(r'([^.!?]*[.!?])', text)
+    sentence_length = [len(sentence.split()) for sentence in sentences]
+    return sum(sentence_length) / len(sentence_length)
+
+def average_world_length(text):
+    """Calculate the average word length in characters"""
+    words = re.findall(r'\b\w+\b', text)
+    word_length = [len(word) for word in words]
+    return sum(word_length) / len(word_length)
+
