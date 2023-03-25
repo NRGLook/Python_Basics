@@ -26,3 +26,9 @@ def average_world_length(text):
     word_length = [len(word) for word in words]
     return sum(word_length) / len(word_length)
 
+def top_ngrams(text, n = 4, k = 10):
+    """Return the top k n-grams in the given text"""
+    words = re.findall(r'\b\w+\b', text)
+    ngrams = Counter(zip(*[words[i:] for i in range(n)]))
+    return ngrams.most_common(k)
+
