@@ -28,3 +28,8 @@ class UniqueElementsContainer:
                 found = True
         if not found:
             print("No such elements")
+
+    def list_elements(self):
+        print("Container elements:")
+        for elem in self.container:
+            print(elem)
