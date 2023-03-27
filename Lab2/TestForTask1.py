@@ -30,7 +30,3 @@ class TestTextAnalysis(unittest.TestCase):
                            ('has multiple sentences some', 1), ('multiple sentences some of', 1),
                            ('sentences some of them', 1), ('some of them are', 1), ('of them are declarative', 1)]
         self.assertEqual(top_ngrams(self.text), expected_output)
-
-
-if name == 'main':
-    unittest.main()
