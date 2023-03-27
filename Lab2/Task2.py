@@ -33,3 +33,13 @@ class UniqueElementsContainer:
         print("Container elements:")
         for elem in self.container:
             print(elem)
+
+    def grep_elements(self, regex):
+        pattern = re.compile(regex)
+        found = False
+        for elem in self.container:
+            if pattern.search(elem):
+                print(elem)
+                found = True
+        if not found:
+            print("No such elements")
