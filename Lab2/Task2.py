@@ -20,4 +20,11 @@ class UniqueElementsContainer:
         else:
             print(f"{key} does not exist in the container")
 
-
+    def find_elements(self, *args):
+        found = False
+        for arg in args:
+            if arg in self.container:
+                print(f"{arg} found in the container")
+                found = True
+        if not found:
+            print("No such elements")
