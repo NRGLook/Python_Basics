@@ -1,43 +1,75 @@
 import re
-from collections import Counter
+
 
 def count_sentences(text):
     """Count the number of sentences in the given text"""
-    return len(re.findall(r'[.]{1,3}\s', text))
+    return len(re.findall(r'[^.]{2}[.]\s', text)) + len(re.findall(r'[.]{3}\s', text))
 
-def count_non_declarative_sentences(text):
+
+def count_of_non_declarative_sentences(text):
     """Count the number of non-declarative sentences in the given text"""
-    non_declarative_count = 0
-    sentences = re.findall(r'([^.!?]*[.!?])', text)
-    for sentence in sentences:
-        if sentence.endswith("?") or sentence.endswith("!"):
-            non_declarative_count += 1
-        return non_declarative_count
+    return len(re.findall(r'[?!]\s', text))
+
 
 def average_sentence_length(text):
     """Calculate the average sentence length in characters"""
-    sentences = re.findall(r'([^.!?]*[.!?])', text)
-    sentence_length = [len(sentence.split()) for sentence in sentences]
-    return sum(sentence_length) / len(sentence_length)
+    sentences = re.findall(r'(?=\s[A-Z0-9]).*?(?=[.?!]\s)', text)
+    count_of_sentences = len(sentences)
+    count_char = 0
 
-def average_world_length(text):
+    if count_sentences == 0:
+        return 0
+
+    for sent in sentences:
+        words = re.findall(r'(?=\w).*?(?=\W)', sent + ' ')
+        for w in words:
+            if len(w) == len(re.findall(r'\d', w)):
+                continue
+            count_char += len(w)
+
+    return count_char / count_of_sentences
+
+
+def average_word_length(text):
     """Calculate the average word length in characters"""
-    words = re.findall(r'\b\w+\b', text)
-    word_length = [len(word) for word in words]
-    return sum(word_length) / len(word_length)
+    words = re.findall(r'(?=\w).*?(?=\W)', text)
+    count_words = len(words)
+    count_char = 0
 
-def top_ngrams(text, n = 4, k = 10):
-    """Return the top k n-grams in the given text"""
-    words = re.findall(r'\b\w+\b', text)
-    ngrams = Counter(zip(*[words[i:] for i in range(n)]))
-    return ngrams.most_common(k)
+    for w in words:
+        if len(w) == len(re.findall(r'\d', w)):
+            continue
+        count_char += len(w)
 
-text = "This 123 123abc 34567 is a simple text. It has multiple sentences.  "
-print(f"Number of sentences: {count_sentences(text)}")
-print(f"Number of non declarative sentences: {count_non_declarative_sentences(text)}")
-print(f"Average sentence length: {average_sentence_length(text)}")
-print(f"Average world length: {average_world_length(text)}")
-print(f"Average world length: {top_ngrams(text, n = 4, k = 10)}")
+    return count_char / count_words
+
+
+def top_ngrams(text: str, K=10, N=4):
+    """Return the top k n-grams in the given text(words), by default K = 10 and N = 4"""
+    n_grams: dict[str, int] = {}
+    words = re.findall(r'(?=\w).*?(?=\W)', text.lower())
+
+    for i in range(len(words) - N + 1):
+        n_gram = ' '.join(x for x in words[i:i + N])
+        if n_gram in n_grams:
+            n_grams[n_gram] += 1
+        else:
+            n_grams[n_gram] = 1
+
+    return sorted(n_grams.items(), reverse=True, key=lambda item: item[1])[:K]
+
+
+input_text = 'This is a text that do not give you anything 123 a32 with some separators, and ' \
+             'multiple sentences. La-la-la... Hello, my name is Ilya, what about you? My dea ' \
+             'Abbreviations can also appear a1b2c3, but remember not with numbers like 1234. ' \
+             'Today i will pass you lab. YEEEE! Hi there. Hi... There. Is anyone here? Yes   ' \
+             'How are you? I am fine! Today i pass my lab that i wrote all weekends. Yes, all'
+
+print("Count sentences:", count_sentences(' ' + input_text + ' '))
+print("Count of non declarative sentences:", count_of_non_declarative_sentences(' ' + input_text + ' '))
+print("Average sentence length:", average_sentence_length(' ' + input_text + ' '))
+print("Average word length:", average_word_length(' ' + input_text + ' '))
+print("Top ngrams:", top_ngrams(' ' + input_text + ' '))
 
 
 
