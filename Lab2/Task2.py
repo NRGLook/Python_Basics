@@ -1,6 +1,7 @@
 import re
 import json
 
+
 class UniqueElementsContainer:
     def init(self):
         self.container = set()
@@ -53,6 +54,7 @@ class UniqueElementsContainer:
         with open(filename, "r") as f:
             self.container = set(json.load(f))
         print(f"Container loaded from {filename}")
+
 
 class CLI:
     def init(self):
