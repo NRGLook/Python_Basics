@@ -13,5 +13,11 @@ class UniqueElementsContainer:
             else:
                 print(f"{arg} already exists in the container")
 
+    def remove_element(self, key):
+        if key in self.container:
+            self.container.remove(key)
+            print(f"{key} removed from the container")
+        else:
+            print(f"{key} does not exist in the container")
 
 
