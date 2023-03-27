@@ -43,3 +43,13 @@ class UniqueElementsContainer:
                 found = True
         if not found:
             print("No such elements")
+
+    def save_container(self, filename):
+        with open(filename, "w") as f:
+            json.dump(list(self.container), f)
+        print(f"Container saved to {filename}")
+
+    def load_container(self, filename):
+        with open(filename, "r") as f:
+            self.container = set(json.load(f))
+        print(f"Container loaded from {filename}")
