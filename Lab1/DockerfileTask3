@@ -1,8 +1,0 @@
-FROM python:3.10
-
-RUN mkdir -p /DockerfileTask3/
-WORKDIR /DockerfileTask3/
-
-COPY . /DockerfileTask3/
-
-CMD ["python", "Task3.py"]
