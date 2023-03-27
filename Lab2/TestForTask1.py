@@ -1,10 +1,7 @@
 import unittest
 
-from Task1 import count_sentences
-from Task1 import average_sentence_length
-from Task1 import count_of_non_declarative_sentences
-from Task1 import average_word_length
-from Task1 import top_ngrams
+from Task1 import count_sentences, average_sentence_length, count_of_non_declarative_sentences,\
+                  average_word_length, top_ngrams
 
 
 class TestTextAnalysis(unittest.TestCase):
