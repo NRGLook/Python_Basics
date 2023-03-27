@@ -3,7 +3,7 @@ import json
 
 
 class UniqueElementsContainer:
-    def init(self):
+    def __init__(self):
         self.container = set()
 
     def add_elements(self, *args):
@@ -57,7 +57,7 @@ class UniqueElementsContainer:
 
 
 class CLI:
-    def init(self):
+    def __init__(self):
         self.containers = {}
 
     def run(self):
