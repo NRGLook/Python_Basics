@@ -53,3 +53,45 @@ class UniqueElementsContainer:
         with open(filename, "r") as f:
             self.container = set(json.load(f))
         print(f"Container loaded from {filename}")
+
+class CLI:
+    def init(self):
+        self.containers = {}
+
+    def run(self):
+        print("Welcome to Unique Elements Container CLI!")
+        while True:
+            username = input("Please enter your username: ")
+            if username not in self.containers:
+                self.containers[username] = UniqueElementsContainer()
+                print(f"New container created for user {username}")
+            else:
+                print(f"Container loaded for user {username}")
+
+            while True:
+                user_input = input(f"{username} >>> ")
+                tokens = user_input.strip().split(" ")
+                if tokens[0] == "add":
+                    self.containers[username].add_elements(*tokens[1:])
+                elif tokens[0] == "remove":
+                    self.containers[username].remove_element(tokens[1])
+                elif tokens[0] == "find":
+                    self.containers[username].find_elements(*tokens[1:])
+                elif tokens[0] == "list":
+                    self.containers[username].list_elements()
+                elif tokens[0] == "grep":
+                    self.containers[username].grep_elements(tokens[1])
+                elif tokens[0] == "save":
+                    self.containers[username].save_container(tokens[1])
+                elif tokens[0] == "load":
+                    self.containers[username].load_container(tokens[1])
+                elif tokens[0] == "switch":
+                    print("Switching user...")
+                    break
+                else:
+                    print("Unknown command")
+            if input("Would you like to exit? (y/n) ").strip().lower() == "y":
+                break
+
+cli = CLI()
+cli.run()
