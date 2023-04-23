@@ -4,5 +4,3 @@ RUN mkdir -p  /Home/Git/Lab1/
 WORKDIR /Home/Git/Lab1/
 
 COPY . /Home/Git/Lab1/
-
-CMD ["python", "Task1.py"]
