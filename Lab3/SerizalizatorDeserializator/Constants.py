@@ -20,10 +20,10 @@ class Cls:
         pass
 
 
-smethodtype = type(Cls.dict["sf"])
-cmethodtype = type(Cls.dict["cf"])
+smethodtype = type(Cls.__dict__["sf"])
+cmethodtype = type(Cls.__dict__["cf"])
 
-CODE_PROPS = [prop.name for prop in [
+CODE_PROPS = [prop.__name__ for prop in [
         codetype.co_argcount,
         codetype.co_posonlyargcount,
         codetype.co_kwonlyargcount,

@@ -1,7 +1,7 @@
 from enum import Enum
 
-from SerializationOfClassesAndFuncs import XmlSerializer
-from SerializationOfClassesAndFuncs import JsonSerializer
+from SerizalizatorDeserializator import XmlSerializer
+from SerizalizatorDeserializator import JsonSerializer
 
 
 class SerializerType(Enum):

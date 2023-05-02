@@ -1,97 +1,120 @@
-import argparse
-import os
-
-from SerializeFactory import SerializerFactory
+from SerizalizatorDeserializator.SerializeFactory import SerializersFactory, SerializerType
 
 
-# Press the green button in the gutter to run the script.
-class JSONSerializer:
+def tst2(b=10):
+    return b + 1
+
+
+def tst(a):
+    return a + a ** 2
+
+
+tst3 = lambda x: x ** 2
+
+
+def gen():
+    for i in range(10):
+        yield i
+
+
+def tst5():
+    def tst6():
+        return 18
+
+    return tst6
+
+
+class t:
     @staticmethod
-    def dump(obj, fp):
-        with open(fp, "w") as f:
-            f.write(JSONSerializer.dumps(obj))
+    def lol():
+        return "lol"
 
-    @staticmethod
-    def dumps(obj):
-        if isinstance(obj, (int, float, bool)):
-            return str(obj).lower()
-        elif isinstance(obj, str):
-            return f'"{obj}"'
-        elif isinstance(obj, (list, tuple)):
-            return f"[{','.join(map(JSONSerializer.dumps, obj))}]"
-        elif isinstance(obj, dict):
-            return f"{{{','.join([f'\"{k}\":{JSONSerializer.dumps(v)}' for k,v in obj.items()])}}}"
-        elif obj is None:
-            return "null"
-        else:
-            raise TypeError(f"Object of type '{obj.class.name}' is not JSON serializable")
+    @classmethod
+    def clsmet(cls):
+        return cls._LOL
 
-    @staticmethod
-    def load(fp):
-        with open(fp, "r") as f:
-            return JSONSerializer.loads(f.read())
+    def f(self):
+        return 1
 
-    @staticmethod
-    def loads(s):
-        return eval(re.sub(r'"(.*?)":', r'\\\"\1\\\":', s))
+    _LOL = 1 - 0
 
 
-class XMLSerializer:
-    @staticmethod
-    def dump(obj, fp):
-        with open(fp, "w") as f:
-            f.write(XMLSerializer.dumps(obj))
+class T(t):
+    _X = 11
 
-    @staticmethod
-    def dumps(obj):
-        if isinstance(obj, (int, float, bool)):
-            return str(obj).lower()
-        elif isinstance(obj, str):
-            return f"<str>{obj}</str>"
-        elif isinstance(obj, (list, tuple)):
-            return f"<list>{''.join([XMLSerializer.dumps(item) for item in obj])}</list>"
-        elif isinstance(obj, dict):
-            return f"<dict>{''.join([f'<{k}>{XMLSerializer.dumps(v)}</{k}>' for k,v in obj.items()])}</dict>"
-        elif obj is None:
-            return "<null/>"
-        else:
-            raise TypeError(f"Object of type '{obj.class.name}' is not XML serializable")
+    A = 10
+    B = 11
+    C = 14
 
     @staticmethod
-    def load(fp):
-        with open(fp, "r") as f:
-            return XMLSerializer.loads(f.read())
+    def tst4():
+        return 123 * T._X
 
-    @staticmethod
-    def loads(s):
-        return eval(re.sub(r"<(.*?)>(.*?)</\1>", r'{"\\1":"\\2"}', s))
+    def init(self):
+        self.xy = 10
 
-
-class SerializerFactory:
-    @staticmethod
-    def create_serializer(format_type):
-        if format_type == "json":
-            return JSONSerializer
-        elif format_type == "xml":
-            return XMLSerializer
-        else:
-            raise ValueError(f"Unsupported serializer format '{format_type}'")
+    def inf(self):
+        print(self.xy, " ", self._LOL)
 
 
-if name == "main":
-    parser = argparse.ArgumentParser(description="Serialize and deserialize Python objects in different formats")
-    parser.add_argument("obj", type=str, help="The object to be serialized and deserialized")
-    parser.add_argument("--format", type=str, default="json", help="The format to use for serialization")
-    parser.add_argument("--outfile", type=str, help="The file to write the serialized object to")
-    args = parser.parse_args()
+def my_decorator(func):
+    def cwrapper(*args, **kwargs):
+        print("start func")
+        func(*args, **kwargs)
+        print("end func")
 
-    serializer_cls = SerializerFactory.create_serializer(args.format)
-    obj = eval(args.obj)
+    return cwrapper
 
-    if args.outfile:
-        serializer_cls.dump(obj, args.outfile)
-        print(f"Object serialized to {os.path.abspath(args.outfile)}")
-    else:
-        serialized_obj = serializer_cls.dumps(obj)
-        print(serialized_obj
 
+def for_dec(a):
+    print("Hello world", a)
+
+
+df = my_decorator(for_dec)
+
+
+class A:
+    a = "A"
+
+
+class B(A):
+    a = "B"
+
+
+class C(A):
+    a = "C"
+
+
+class D(B, C):
+    a = "D"
+
+
+if __name__ == 'main':
+
+    o = None
+    #o = 103
+    #o = {1:{1:{1:{1:{1:{1:{1:1}}}}}}}
+
+    s = SerializersFactory.create_serializer(SerializerType.XML)
+
+    with open("data_file.xml", "w") as file:
+        s.dump(T.tst4, file)
+    with open("data_file.xml", "r") as file:
+        a = s.load(file)
+
+    print(a)
+
+    print(T.dict)
+    print(a.dict)
+
+    print(a)
+    print(a._X)
+    print(a.A)
+    print(a.tst4())
+    print(a.clsmet())
+    print(a.lol())
+    print(a._LOL)
+
+    # x = JsonSerializer.dumps(T.clsmet)
+    # print(x)
+    # y = JsonSerializer.loads(x)

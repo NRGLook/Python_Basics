@@ -1,5 +1,5 @@
 import inspect
-from SerializationOfClassesAndFuncs import nonetype, moduletype, codetype, celltype, \
+from SerizalizatorDeserializator import nonetype, moduletype, codetype, celltype, \
                           functype, bldinfunctype, smethodtype, cmethodtype, \
                           mapproxytype, wrapdesctype, metdesctype, getsetdesctype, \
                           CODE_PROPS, UNIQUE_TYPES
