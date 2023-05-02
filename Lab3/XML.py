@@ -1,119 +1,110 @@
 import re
+
 import regex
 from SerializationOfClassesAndFuncs import BaseSerializer
 from SerializationOfClassesAndFuncs import DictSerializer
 
-
 from SerializationOfClassesAndFuncs import nonetype
 
 
-class JsonSerializer(BaseSerializer):
-    INF_LITERAL = str(1E1000)
-    NAN_LITERAL = str(1E1000 / 1E1000)
+class XmlSerializer(BaseSerializer):
+    NONE_LITERAL = "null"
 
-    TRUE_LITERAL = "true"
-    FALSE_LITERAL = "false"
+    KEY_GROUP_NAME = "key"
+    VALUE_GROUP_NAME = "value"
 
-    NULL_LITERAL = "null"
+    XML_SCHEME_SOURCE = "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " + \
+                        "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\""
 
-    INT_PATTERN = fr"[+-]?\d+"
-    FLOAT_PATTERN = fr"(?:[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?|[+-]?{INF_LITERAL}\b|{NAN_LITERAL}\b)"
-    BOOL_PATTERN = fr"({TRUE_LITERAL}|{FALSE_LITERAL})\b"
-    STRING_PATTERN = fr"\"(?:(?:\\\")|[^\"])*\""
-    NULL_PATTERN = fr"\b{NULL_LITERAL}\b"
+    XML_SCHEME_PATTERN = "xmlns:xsi=\"http://www\.w3\.org/2001/XMLSchema-instance\" " + \
+                         "xmlns:xsd=\"http://www\.w3\.org/2001/XMLSchema\""
 
-    ELEMENTARY_TYPES_PATTERN = fr"{FLOAT_PATTERN}|{INT_PATTERN}|{BOOL_PATTERN}|{STRING_PATTERN}|{NULL_PATTERN}"
+    ELEMENTARY_NAMES_PATTERN = "int|float|bool|str|NoneType|list|dict"
 
-    # This regex use recursive statements to be able to capture nested lists and objects.
-    ARRAY_PATTERN = r"\[(?R)?(?:,(?R))*\]"
-    OBJECT_PATTERN = r"\{(?:(?R):(?R))?(?:,(?R):(?R))*\}"
+    XML_ELEMENT_PATTERN = fr"(\<(?P<{KEY_GROUP_NAME}>{ELEMENTARY_NAMES_PATTERN})\>" + \
+                          fr"(?P<{VALUE_GROUP_NAME}>([^<>]*)|(?R)+)\</(?:{ELEMENTARY_NAMES_PATTERN})\>)"
 
-    VALUE_PATTERN = fr"\s*({ELEMENTARY_TYPES_PATTERN}|" + \
-                    fr"{ARRAY_PATTERN}|{OBJECT_PATTERN})\s*"
+    FIRST_XML_ELEMENT_PATTERN = fr"(\<(?P<{KEY_GROUP_NAME}>{ELEMENTARY_NAMES_PATTERN})\s*({XML_SCHEME_PATTERN})?\>" + \
+                                fr"(?P<{VALUE_GROUP_NAME}>([^<>]*)|(?R)+)\</(?:{ELEMENTARY_NAMES_PATTERN})\>)"
 
     def dumps(self, obj) -> str:
         obj = DictSerializer.to_dict(obj)
-        return self.__dumps_from_dict(obj)
+        return self.dumps_from_dict(obj, is_first=True)
 
-    def __dumps_from_dict(self, obj) -> str:
-        if type(obj) in (int, float):
-            return str(obj)
-
-        if type(obj) is bool:
-            return self.TRUE_LITERAL if obj else self.FALSE_LITERAL
+    def __dumps_from_dict(self, obj, is_first=False) -> str:
+        if type(obj) in (int, float, bool, nonetype):
+            return self.__create_xml_element(type(obj).__name, str(obj), is_first)
 
         if type(obj) is str:
-            return '"' + self.__mask_quotes(obj) + '"'
-
-        if type(obj) is nonetype:
-            return self.NULL_LITERAL
+            data = self.mask_symbols(obj)
+            return self.__create_xml_element(str.__name, data, is_first)
 
         if type(obj) is list:
-            return '[' + ", ".join([self.__dumps_from_dict(item) for item in obj]) + ']'
+            data = ''.join([self.dumps_from_dict(o) for o in obj])
+            return self.__create_xml_element(list.__name, data, is_first)
 
         if type(obj) is dict:
-            return '{' + ", ".join([f"{self.__dumps_from_dict(item[0])}: "
-                                    f"{self.__dumps_from_dict(item[1])}" for item in obj.items()]) + '}'
+            data = ''.join(
+                [f"{self.dumps_from_dict(item[0])}{self.__dumps_from_dict(item[1])}" for item in obj.items()])
+            return self.__create_xml_element(dict.__name, data, is_first)
+
         else:
             raise ValueError
 
     def loads(self, string: str):
-        obj = self.__loads_to_dict(string)
+        obj = self.loads_to_dict(string, is_first=True)
         return DictSerializer.from_dict(obj)
 
-    def __loads_to_dict(self, string: str):
+    def __loads_to_dict(self, string: str, is_first=False):
         string = string.strip()
+        xml_element_pattern = self.FIRST_XML_ELEMENT_PATTERN if is_first else self.XML_ELEMENT_PATTERN
 
-        # Int
-        match = re.fullmatch(self.INT_PATTERN, string)
-        if match:
-            return int(match.group(0))
+        match = regex.fullmatch(xml_element_pattern, string)
 
-        # Float
-        match = re.fullmatch(self.FLOAT_PATTERN, string)
-        if match:
-            return float(match.group(0))
+        if not match:
+            raise ValueError
 
-        # Bool
-        match = re.fullmatch(self.BOOL_PATTERN, string)
-        if match:
-            return match.group(0) == self.TRUE_LITERAL
+        key = match.group(self.KEY_GROUP_NAME)
+        value = match.group(self.VALUE_GROUP_NAME)
 
-        # Str
-        match = re.fullmatch(self.STRING_PATTERN, string)
-        if match:
-            ans = match.group(0)
-            ans = self.__unmask_quotes(ans)
-            return ans[1:-1]
+        if key == int.__name:
+            return int(value)
 
-        # None
-        match = re.fullmatch(self.NULL_PATTERN, string)
-        if match:
+        if key == float.name:
+            return float(value)
+
+        if key == bool.name:
+            return value == str(True)
+
+        if key == str.name:
+            return self.unmask_symbols(value)
+
+        if key == nonetype.__name:
             return None
 
-        # List
-        if string[0] == '[' and string[-1] == ']':
-            string = string[1:-1]
-            matches = regex.findall(self.VALUE_PATTERN, string)
-            return [self.__loads_to_dict(match[0]) for match in matches]
+        if key == list.name:
+            matches = regex.findall(self.XML_ELEMENT_PATTERN, value)
+            return [self.loads_to_dict(match[0]) for match in matches]
 
-        # Dict
-        if string[0] == '{' and string[-1] == '}':
-            string = string[1:-1]
-            matches = regex.findall(self.VALUE_PATTERN, string)
-
-            # Variable matches will store key-value pairs in one row. Elements with
-            # even indexes are keys, those with odd indexes are values.
+        if key == dict.__name:
+            matches = regex.findall(self.XML_ELEMENT_PATTERN, value)
             return {self.__loads_to_dict(matches[i][0]):
-                    self.__loads_to_dict(matches[i + 1][0]) for i in range(0, len(matches), 2)}
-
+                        self.__loads_to_dict(matches[i + 1][0]) for i in range(0, len(matches), 2)}
         else:
             raise ValueError
 
-    @staticmethod
-    def __mask_quotes(string: str) -> str:
-        return string.replace('\\', "\\\\").replace('"', r"\"").replace("'", r"\'")
+    def __create_xml_element(self, name: str, data: str, is_first=False):
+        if is_first:
+            return f"<{name} {self.XML_SCHEME_SOURCE}>{data}</{name}>"
+        else:
+            return f"<{name}>{data}</{name}>"
 
     @staticmethod
-    def __unmask_quotes(string: str) -> str:
-        return string.replace('\\\\', "\\").replace(r"\"", '"').replace(r"\'", "'")
+    def __mask_symbols(string: str) -> str:
+        return string.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;"). \
+                      replace('"', "&quot;").replace("'", "&apos;")
+
+    @staticmethod
+    def __unmask_symbols(string: str) -> str:
+        return string.replace("&amp;", '&').replace("&lt;", '<').replace("&gt;", '>'). \
+                      replace("&quot;", '"').replace("&apos;", "'")
