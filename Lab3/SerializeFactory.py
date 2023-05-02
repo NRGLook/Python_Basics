@@ -1,13 +1,23 @@
-from JSON import JSONSerializer
-from XML import XMLSerializer
+from enum import Enum
+
+from SerializationOfClassesAndFuncs import XmlSerializer
+from SerializationOfClassesAndFuncs import JsonSerializer
 
 
-class SerializerFactory:
+class SerializerType(Enum):
+    JSON = "json"
+    XML = "xml"
+
+
+class SerializersFactory:
     @staticmethod
-    def create_serializer(format_type):
-        if format_type == "json":
-            return JSONSerializer
-        elif format_type == "xml":
-            return XMLSerializer
+    def create_serializer(st: SerializerType):
+
+        if st == SerializerType.JSON:
+            return JsonSerializer()
+
+        elif st == SerializerType.XML:
+            return XmlSerializer()
+
         else:
-            raise ValueError(f"Unsupported serializer format '{format_type}'")
+            raise Exception("Unknown type of serialization")
