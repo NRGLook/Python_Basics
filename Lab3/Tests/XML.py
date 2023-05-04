@@ -66,5 +66,5 @@ class SerializationTestCase(unittest.TestCase):
 
         self.assertEqual(before, after)
 
-if name == 'main':
+if __name__ == '__main__':
     unittest.main()
