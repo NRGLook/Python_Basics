@@ -4,6 +4,7 @@ from SerizalizatorDeserializator import nonetype, moduletype, codetype, celltype
                           mapproxytype, wrapdesctype, metdesctype, getsetdesctype, \
                           CODE_PROPS, UNIQUE_TYPES
 
+
 class DictSerializer:
     TYPE_KW = "type"
     SOURCE_KW = "source"
