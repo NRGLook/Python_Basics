@@ -1,6 +1,0 @@
-FROM python:3.10
-
-RUN mkdir -p  /Home/Git/Lab1/
-WORKDIR /Home/Git/Lab1/
-
-COPY . /Home/Git/Lab1/
