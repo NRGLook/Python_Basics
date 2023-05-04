@@ -1,0 +1,14 @@
+README.md
+setup.py
+SerizalizatorDeserializator/BaseSerializer.py
+SerizalizatorDeserializator/Constants.py
+SerizalizatorDeserializator/DictSerializer.py
+SerizalizatorDeserializator/JSON.py
+SerizalizatorDeserializator/SerializeFactory.py
+SerizalizatorDeserializator/XML.py
+SerizalizatorDeserializator/__init__.py
+SerizalizatorDeserializator.egg-info/PKG-INFO
+SerizalizatorDeserializator.egg-info/SOURCES.txt
+SerizalizatorDeserializator.egg-info/dependency_links.txt
+SerizalizatorDeserializator.egg-info/requires.txt
+SerizalizatorDeserializator.egg-info/top_level.txt
