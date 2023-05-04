@@ -29,30 +29,30 @@ class XmlSerializer(BaseSerializer):
 
     def dumps(self, obj) -> str:
         obj = DictSerializer.to_dict(obj)
-        return self.dumps_from_dict(obj, is_first=True)
+        return self.__dumps_from_dict(obj, is_first=True)
 
     def __dumps_from_dict(self, obj, is_first=False) -> str:
         if type(obj) in (int, float, bool, nonetype):
-            return self.__create_xml_element(type(obj).__name, str(obj), is_first)
+            return self.__create_xml_element(type(obj).__name__, str(obj), is_first)
 
         if type(obj) is str:
-            data = self.mask_symbols(obj)
-            return self.__create_xml_element(str.__name, data, is_first)
+            data = self.__mask_symbols(obj)
+            return self.__create_xml_element(str.__name__, data, is_first)
 
         if type(obj) is list:
-            data = ''.join([self.dumps_from_dict(o) for o in obj])
-            return self.__create_xml_element(list.__name, data, is_first)
+            data = ''.join([self.__dumps_from_dict(o) for o in obj])
+            return self.__create_xml_element(list.__name__, data, is_first)
 
         if type(obj) is dict:
             data = ''.join(
-                [f"{self.dumps_from_dict(item[0])}{self.__dumps_from_dict(item[1])}" for item in obj.items()])
-            return self.__create_xml_element(dict.__name, data, is_first)
+                [f"{self.__dumps_from_dict(item[0])}{self.__dumps_from_dict(item[1])}" for item in obj.items()])
+            return self.__create_xml_element(dict.__name__, data, is_first)
 
         else:
             raise ValueError
 
     def loads(self, string: str):
-        obj = self.loads_to_dict(string, is_first=True)
+        obj = self.__loads_to_dict(string, is_first=True)
         return DictSerializer.from_dict(obj)
 
     def __loads_to_dict(self, string: str, is_first=False):
@@ -67,26 +67,26 @@ class XmlSerializer(BaseSerializer):
         key = match.group(self.KEY_GROUP_NAME)
         value = match.group(self.VALUE_GROUP_NAME)
 
-        if key == int.__name:
+        if key == int.__name__:
             return int(value)
 
-        if key == float.name:
+        if key == float.__name__:
             return float(value)
 
-        if key == bool.name:
+        if key == bool.__name__:
             return value == str(True)
 
-        if key == str.name:
-            return self.unmask_symbols(value)
+        if key == str.__name__:
+            return self.__unmask_symbols(value)
 
-        if key == nonetype.__name:
+        if key == nonetype.__name__:
             return None
 
-        if key == list.name:
+        if key == list.__name__:
             matches = regex.findall(self.XML_ELEMENT_PATTERN, value)
-            return [self.loads_to_dict(match[0]) for match in matches]
+            return [self.__loads_to_dict(match[0]) for match in matches]
 
-        if key == dict.__name:
+        if key == dict.__name__:
             matches = regex.findall(self.XML_ELEMENT_PATTERN, value)
             return {self.__loads_to_dict(matches[i][0]):
                         self.__loads_to_dict(matches[i + 1][0]) for i in range(0, len(matches), 2)}
