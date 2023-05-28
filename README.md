@@ -1,1 +1,4 @@
-![image](https://github.com/NRGLook/PythonLabs/assets/91383841/a8522be1-4c98-4e4e-96b1-b0408f2f9002)
+# First Django Project - Estate Agency 
+In this lab we should create django project according to option, option is present below:
+
+![image](https://github.com/NRGLook/PythonLabs/assets/91383841/d56d9ad5-df3a-4a90-9252-0269f8e7ccf3)
